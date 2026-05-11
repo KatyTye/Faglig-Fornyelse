@@ -8,6 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+eksempel_Vue_kode
 .DS_Store
 dist
 dist-ssr

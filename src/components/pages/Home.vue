@@ -1,7 +1,7 @@
 <template>
 	<div class="page-content__image-wrapper">
 		<img src="../../assets/background.jpg" alt="frontpage image"
-		class="page-content__image">
+		class="page-content__image" loading="lazy">
 	</div>
 	<article class="page-content__kontakt">
 		<div class="page-content__kontakt-wrapper">

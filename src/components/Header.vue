@@ -10,7 +10,7 @@
 				Hjem
 			</RouterLink>
 			<RouterLink to="/kontakt" class="top-content__navigatio-link">
-				Kontakt Os
+				Kontakt
 			</RouterLink>
 		</nav>
 	</header>

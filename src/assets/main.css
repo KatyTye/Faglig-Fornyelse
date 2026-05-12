@@ -29,11 +29,30 @@ a:hover {
 	border-color: var(--third-text-color);
 }
 
-p, h1, h2, h3, h4 {
+p {
 	color: var(--primary-text-color);
+}
+
+h1, h2, h3, h4 {
+	font-weight: bold;
+	color: var(--third-text-color);
 }
 
 img, svg {
 	width: 100%;
 	height: 100%;
+}
+
+.button {
+	padding: 10px;
+	border-radius: 5px;
+	background: transparent;
+	color: var(--third-text-color);
+	border: 2px solid var(--third-text-color);
+	transition: border 0.3s linear, background 0.3s linear, color 0.3s linear;
+}
+
+.button:hover {
+	color: var(--primary-text-color);
+	background: var(--third-text-color);
 }

@@ -32,5 +32,7 @@ export default {
 
 <template>
   <Header />
-  <RouterView />
+  <main class="page-content">
+    <RouterView />
+  </main>
 </template>

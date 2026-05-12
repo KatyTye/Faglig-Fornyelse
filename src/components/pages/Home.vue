@@ -1,6 +1,3 @@
-<script lang="ts">
-</script>
-
 <template>
 	<div class="page-content__image-wrapper">
 		<img src="../../assets/background.jpg" alt="frontpage image"

@@ -1,9 +1,10 @@
-<script lang="ts">
-</script>
-
 <template>
 	<header class="top-content">
-		<p class="top-content__title">FagForn</p>
+		<RouterLink class="top-content__wrapper" to="/">
+			<img src="../assets/logo.svg" alt="logo"
+			class="top-content__logo" />
+			<p class="top-content__title">FagForn</p>
+		</RouterLink>
 		<nav class="top-content__navigation">
 			<RouterLink to="/" class="top-content__navigatio-link">
 				Hjem
@@ -15,15 +16,37 @@
 	</header>
 </template>
 
-<style>
-
+<style scoped>
 .top-content {
 	padding: 25px;
 	display: flex;
-	color: white;
 	align-items: center;
 	justify-content: space-between;
-	background: rgba(255, 255, 255, 0.05);
+	background: var(--secondary-background-color);
 }
 
+.top-content__logo {
+	width: auto;
+	height: 25px;
+}
+
+.top-content__wrapper {
+	border: none;
+	display: grid;
+	align-items: center;
+	grid-template-columns: 1fr 2fr;
+}
+
+.top-content__navigation {
+	gap: 25px;
+	display: flex;
+	position: relative;
+}
+
+.top-content__title {
+	font-size: 18px;
+	text-align: left;
+	font-weight: bold;
+	color: var(--primary-text-color);
+}
 </style>

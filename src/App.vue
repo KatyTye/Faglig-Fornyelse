@@ -1,11 +1,11 @@
-<script lang="ts">
+<script setup lang="ts">
 import { createMemoryHistory, createRouter } from 'vue-router';
-
-import HomePage from "./components/pages/Home.vue"
 import ContactPage from "./components/pages/Contact.vue"
-import FooterComponent from "./components/pages/Contact.vue"
+import HomePage from "./components/pages/Home.vue"
 import Header from './components/Header.vue';
+</script>
 
+<script lang="ts">
 const routes = [
   {
     path: "/", component: HomePage
@@ -25,7 +25,7 @@ export const router = createRouter({
 
 export default {
 	components: {
-		Header,
+		Header
 	}
 }
 </script>

@@ -12,6 +12,8 @@ export default defineConfig({
     vueDevTools(),
   ],
 
+  base: "/Faglig-Fornyelse/",
+
   test: {
     environment: 'jsdom',
     globals: true

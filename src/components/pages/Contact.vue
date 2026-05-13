@@ -10,7 +10,7 @@ function checkForFormErrors() {
 		"navn": [],
 		"mail": [],
 		"telefon": [],
-		"besked": []
+		"besked": [],
 	}
 
 	if (!name) {
@@ -48,7 +48,29 @@ export default {
 			const fields = ['navn', 'telefon', 'mail', 'besked']
 			this.handleChange(fields)
 
-			console.log('hello world')
+			const allErrors = checkForFormErrors()
+
+			if ((allErrors["navn"]?.length || 0) === 0 &&
+			(allErrors["telefon"]?.length || 0) === 0 &&
+			(allErrors["mail"]?.length || 0) === 0 &&
+			(allErrors["besked"]?.length || 0) === 0) {
+				const form = event.currentTarget as HTMLFormElement
+				localStorage.setItem("fagforn_submitted", JSON.stringify({
+					name: form.querySelector<HTMLInputElement>('#navn')?.value,
+					telefon: form.querySelector<HTMLInputElement>('#telefon')?.value,
+					mail: form.querySelector<HTMLInputElement>('#mail')?.value,
+					besked: form.querySelector<HTMLTextAreaElement>('#besked')?.value
+				}))
+
+				form.classList = "page-content__form hidden"
+				const outputText = document.querySelector('#output-text')
+				const outputElm = document.querySelector<HTMLElement>('#output')
+
+				if (outputElm) {
+					outputElm.classList = "page-content__output showed"
+				}
+				outputText?.insertAdjacentText("afterbegin", form.querySelector<HTMLInputElement>('#navn')?.value || "")
+			}
 		},
 
 		handleChange(fields: string[]) {
@@ -82,6 +104,14 @@ export default {
 </script>
 
 <template>
+
+	<div class="page-content__output" id="output">
+		<h2 class="page-content__output-title">Tak for din besked, <span id="output-text">
+		</span>!</h2>
+
+		<p class="page-content__output-text">Dette er kun lavet som eksempel, så din besked er kun gemt lokalt.</p>
+	</div>
+
 	<form v-on:submit="evt => handleSubmit(evt)" class="page-content__form">
 		<label for="navn" class="page-content__form-label">
 			<span class="page-content__form-label-text">
@@ -138,10 +168,27 @@ export default {
 </template>
 
 <style scoped>
+.page-content__output {
+	display: none;
+	padding: 10dvw;
+}
+
+.page-content__output.showed {
+	display: block;
+}
+
+.page-content__output-title {
+	margin-bottom: 10px;
+}
+
 .page-content__form {
 	display: flex;
 	padding: 10dvw;
 	flex-direction: column;
+}
+
+.page-content__form.hidden {
+	display: none;
 }
 
 .page-content__form-label {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { createMemoryHistory, createRouter } from 'vue-router';
+import { createMemoryHistory, createRouter, RouterView } from 'vue-router';
 import ContactPage from "./components/pages/Contact.vue"
 import HomePage from "./components/pages/Home.vue"
 import Header from './components/Header.vue';

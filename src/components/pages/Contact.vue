@@ -1,170 +1,243 @@
 <script lang="ts">
-
-function checkForFormErrors() {
-	const name = (document.querySelector<HTMLInputElement>('#navn')?.value || '').trim()
-	const mail = (document.querySelector<HTMLInputElement>('#mail')?.value || '').trim()
-	const phone = (document.querySelector<HTMLInputElement>('#telefon')?.value || '').trim()
-	const message = (document.querySelector<HTMLTextAreaElement>('#besked')?.value || '').trim()
-
-	const fieldErrors: Record<string, string[]> = {
-		"navn": [],
-		"mail": [],
-		"telefon": [],
-		"besked": [],
-	}
-
-	if (!name) {
-		fieldErrors?.navn?.push('Du skal udfylde dette felt.')
-	}
-
-	if (!mail) {
-		fieldErrors?.mail?.push('Du skal udfylde dette felt.')
-	}
-
-	if (mail && !/\S+@\S+\.\S+/.test(mail)) {
-		fieldErrors?.mail?.push('Du har ikke skrevet en gyldig e-mail.')
-	}
-
-	if (!message) {
-		fieldErrors?.besked?.push('Du skal udfylde dette felt.')
-	}
-
-	if (message && message.length < 25) {
-		fieldErrors?.besked?.push('Din besked skal være på mindst 25 tegn.')
-	}
-
-	if (phone && !/^\+?\d[\d\s-]{6,}\d$/.test(phone)) {
-		fieldErrors?.telefon?.push('Indtasted telefonnummer er ikke gyldigt.')
-	}
-	
-	return fieldErrors
-}
-
 export default {
-	methods: {
-		handleSubmit(event: Event) {
-			event.preventDefault()
+  data() {
+    return {
+      form: {
+        navn: '',
+        telefon: '',
+        mail: '',
+        besked: ''
+      },
 
-			const fields = ['navn', 'telefon', 'mail', 'besked']
-			this.handleChange(fields)
+      errors: {
+        navn: [] as string[],
+        telefon: [] as string[],
+        mail: [] as string[],
+        besked: [] as string[]
+      },
 
-			const allErrors = checkForFormErrors()
+      submitted: false
+    }
+  },
 
-			if ((allErrors["navn"]?.length || 0) === 0 &&
-			(allErrors["telefon"]?.length || 0) === 0 &&
-			(allErrors["mail"]?.length || 0) === 0 &&
-			(allErrors["besked"]?.length || 0) === 0) {
-				const form = event.currentTarget as HTMLFormElement
-				localStorage.setItem("fagforn_submitted", JSON.stringify({
-					name: form.querySelector<HTMLInputElement>('#navn')?.value,
-					telefon: form.querySelector<HTMLInputElement>('#telefon')?.value,
-					mail: form.querySelector<HTMLInputElement>('#mail')?.value,
-					besked: form.querySelector<HTMLTextAreaElement>('#besked')?.value
-				}))
+  methods: {
+    validateField(field: string) {
+      this.errors[field as keyof typeof this.errors] = []
 
-				form.classList = "page-content__form hidden"
-				const outputText = document.querySelector('#output-text')
-				const outputElm = document.querySelector<HTMLElement>('#output')
+      switch (field) {
+        case 'navn':
+          if (!this.form.navn.trim()) {
+            this.errors.navn.push('Du skal udfylde dette felt.')
+          }
+          break
 
-				if (outputElm) {
-					outputElm.classList = "page-content__output showed"
-				}
-				outputText?.insertAdjacentText("afterbegin", form.querySelector<HTMLInputElement>('#navn')?.value || "")
-			}
-		},
+        case 'mail':
+          if (!this.form.mail.trim()) {
+            this.errors.mail.push('Du skal udfylde dette felt.')
+          } else if (!/\S+@\S+\.\S+/.test(this.form.mail)) {
+            this.errors.mail.push(
+              'Du har ikke skrevet en gyldig e-mail.'
+            )
+          }
+          break
 
-		handleChange(fields: string[]) {
-			const allErrors = checkForFormErrors()
-			for (const field of fields) {
-				const list = document.querySelector(`#${field}-list`)
-				if (list) {
-					list.innerHTML = ''
-					const errors = allErrors[field] || []
-					for (const error of errors) {
-						const li = document.createElement('li')
-						li.classList = "page-content__list-item"
-						li.textContent = error
-						list.appendChild(li)
-					}
-				}
+        case 'telefon':
+          if (
+            this.form.telefon &&
+            !/^\+?\d[\d\s-]{6,}\d$/.test(this.form.telefon)
+          ) {
+            this.errors.telefon.push(
+              'Indtasted telefonnummer er ikke gyldigt.'
+            )
+          }
+          break
 
-				if (list) {
+        case 'besked':
+          if (!this.form.besked.trim()) {
+            this.errors.besked.push(
+              'Du skal udfylde dette felt.'
+            )
+          } else if (this.form.besked.length < 25) {
+            this.errors.besked.push(
+              'Din besked skal være på mindst 25 tegn.'
+            )
+          }
+          break
+      }
+    },
 
-					if ((allErrors?.[field]?.length || 0) >= 1) {
-						list.classList = "page-content__list active"
-					} else {
-						list.classList = "page-content__list"
-					}
-				}
-			}
-		}
-	}
+    validateForm() {
+      const fields = ['navn', 'telefon', 'mail', 'besked']
+
+      fields.forEach(field => this.validateField(field))
+
+      return fields.every(
+        field =>
+          this.errors[field as keyof typeof this.errors].length === 0
+      )
+    },
+
+    handleSubmit() {
+      const isValid = this.validateForm()
+
+      if (!isValid) return
+
+      localStorage.setItem(
+        'fagforn_submitted',
+        JSON.stringify(this.form)
+      )
+
+      this.submitted = true
+    }
+  }
 }
-
 </script>
 
 <template>
+  <div
+    v-if="submitted"
+    class="page-content__output showed"
+  >
+    <h2 class="page-content__output-title">
+      Tak for din besked,
+      <span>{{ form.navn }}</span>!
+    </h2>
 
-	<div class="page-content__output" id="output">
-		<h2 class="page-content__output-title">Tak for din besked, <span id="output-text">
-		</span>!</h2>
+    <p class="page-content__output-text">
+      Dette er kun lavet som eksempel,
+      så din besked er kun gemt lokalt.
+    </p>
+  </div>
 
-		<p class="page-content__output-text">Dette er kun lavet som eksempel, så din besked er kun gemt lokalt.</p>
-	</div>
+  <form
+    v-else
+    @submit.prevent="handleSubmit"
+    class="page-content__form"
+  >
+    <!-- NAVN -->
+    <label for="navn" class="page-content__form-label">
+      <span class="page-content__form-label-text">
+        Dit navn:
+        <span class="required">*</span>
+      </span>
 
-	<form v-on:submit="evt => handleSubmit(evt)" class="page-content__form">
-		<label for="navn" class="page-content__form-label">
-			<span class="page-content__form-label-text">
-				Dit navn: <span class="required">
-					*
-				</span>
-			</span>
-			<input type="text" name="navn" id="navn" autocomplete="given-name"
-			placeholder="John Doe" class="page-content__form-input" v-on:input="handleChange(['navn'])">
-		</label>
+      <input
+        id="navn"
+        v-model="form.navn"
+        type="text"
+		placeholder="John Doe"
+        class="page-content__form-input"
+        @input="validateField('navn')"
+      >
+    </label>
 
-		<ul class="page-content__list" id="navn-list"></ul>
+    <ul
+      class="page-content__list"
+      :class="{ active: errors.navn.length }"
+    >
+      <li
+        v-for="error in errors.navn"
+        :key="error"
+        class="page-content__list-item"
+      >
+        {{ error }}
+      </li>
+    </ul>
 
-		<label for="telefon" class="page-content__form-label">
-			<span class="page-content__form-label-text">
-				Dit telefonnummer: <span class="optional">
-					*
-				</span>
-			</span>
-			<input type="text" name="telefon" id="telefon" autocomplete="tel"
-			placeholder="+4512345678" class="page-content__form-input" v-on:input="handleChange(['telefon'])">
-		</label>
+    <!-- TELEFON -->
+    <label for="telefon" class="page-content__form-label">
+      <span class="page-content__form-label-text">
+        Dit telefonnummer:
+      </span>
 
-		<ul class="page-content__list" id="telefon-list"></ul>
+      <input
+        id="telefon"
+        v-model="form.telefon"
+        type="text"
+		placeholder="+4512345678"
+        class="page-content__form-input"
+        @input="validateField('telefon')"
+      >
+    </label>
 
-		<label for="mail" class="page-content__form-label">
-			<span class="page-content__form-label-text">
-				Din e-mail: <span class="required">
-					*
-				</span>
-			</span>
-			<input type="email" name="mail" id="mail" autocomplete="email"
-			placeholder="youremail@anymail.com" class="page-content__form-input" v-on:input="handleChange(['mail'])">
-		</label>
+    <ul
+      class="page-content__list"
+      :class="{ active: errors.telefon.length }"
+    >
+      <li
+        v-for="error in errors.telefon"
+        :key="error"
+        class="page-content__list-item"
+      >
+        {{ error }}
+      </li>
+    </ul>
 
-		<ul class="page-content__list" id="mail-list"></ul>
+    <!-- MAIL -->
+    <label for="mail" class="page-content__form-label">
+      <span class="page-content__form-label-text">
+        Din e-mail:
+        <span class="required">*</span>
+      </span>
 
-		<label for="besked" class="page-content__form-label">
-			<span class="page-content__form-label-text">
-				Din besked: <span class="required">
-					*
-				</span>
-			</span>
-			<textarea name="besked" id="besked" class="page-content__form-input besked"
-			placeholder="Skriv din besked til os her." v-on:input="handleChange(['besked'])"></textarea>
-		</label>
+      <input
+        id="mail"
+        v-model="form.mail"
+        type="email"
+		placeholder="youremail@mail.com"
+        class="page-content__form-input"
+        @input="validateField('mail')"
+      >
+    </label>
 
-		<ul class="page-content__list" id="besked-list"></ul>
+    <ul
+      class="page-content__list"
+      :class="{ active: errors.mail.length }"
+    >
+      <li
+        v-for="error in errors.mail"
+        :key="error"
+        class="page-content__list-item"
+      >
+        {{ error }}
+      </li>
+    </ul>
 
-		<button class="page-content__form-submit button">
-			Indsend kontakt formular
-		</button>
-	</form>
+    <!-- BESKED -->
+    <label for="besked" class="page-content__form-label">
+      <span class="page-content__form-label-text">
+        Din besked:
+        <span class="required">*</span>
+      </span>
+
+      <textarea
+        id="besked"
+        v-model="form.besked"
+		placeholder="Indtast din besked her"
+        class="page-content__form-input besked"
+        @input="validateField('besked')"
+      />
+    </label>
+
+    <ul
+      class="page-content__list"
+      :class="{ active: errors.besked.length }"
+    >
+      <li
+        v-for="error in errors.besked"
+        :key="error"
+        class="page-content__list-item"
+      >
+        {{ error }}
+      </li>
+    </ul>
+
+    <button
+      class="page-content__form-submit button"
+    >
+      Indsend kontakt formular
+    </button>
+  </form>
 </template>
 
 <style scoped>

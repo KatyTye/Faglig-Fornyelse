@@ -3,6 +3,7 @@ import { createMemoryHistory, createRouter } from 'vue-router';
 import ContactPage from "./components/pages/Contact.vue"
 import HomePage from "./components/pages/Home.vue"
 import Header from './components/Header.vue';
+import Footer from './components/Footer.vue';
 </script>
 
 <script lang="ts">
@@ -25,7 +26,8 @@ export const router = createRouter({
 
 export default {
 	components: {
-		Header
+		Header,
+    Footer
 	}
 }
 </script>
@@ -35,4 +37,5 @@ export default {
   <main class="page-content">
     <RouterView />
   </main>
+  <Footer />
 </template>

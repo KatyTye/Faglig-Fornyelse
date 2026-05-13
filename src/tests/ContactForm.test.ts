@@ -2,10 +2,13 @@ import Contact from "@/components/pages/Contact.vue"
 import { describe, it, expect } from "vitest"
 import { mount } from "@vue/test-utils"
 
+const mountContact = () =>
+	mount(Contact)
+
 describe("Testområde for kontaktformular", () => {
 
 	it("viser valideringsfejl for ugyldig e-mail", async () => {
-		const wrapper = mount(Contact)
+		const wrapper = mountContact()
 
 		await wrapper.find("#mail")
 			.setValue("wrong-email")
@@ -18,7 +21,7 @@ describe("Testområde for kontaktformular", () => {
 	})
 
 	it("viser valideringsfejl for ugyldigt telefonnummer", async () => {
-		const wrapper = mount(Contact)
+		const wrapper = mountContact()
 
 		await wrapper.find("#telefon")
 			.setValue("wrong-phone")
@@ -31,7 +34,7 @@ describe("Testområde for kontaktformular", () => {
 	})
 
 	it("viser valideringsfejl for tomt navnefelt", async () => {
-		const wrapper = mount(Contact)
+		const wrapper = mountContact()
 
 		await wrapper.find("#navn")
 			.setValue("")
@@ -44,7 +47,7 @@ describe("Testområde for kontaktformular", () => {
 	})
 
 	it("viser valideringsfejl for tomt beskedfelt", async () => {
-		const wrapper = mount(Contact)
+		const wrapper = mountContact()
 
 		await wrapper.find("#besked")
 			.setValue("")
@@ -57,7 +60,7 @@ describe("Testområde for kontaktformular", () => {
 	})
 
 	it("accepterer gyldig formular, når den indsendes", async () => {
-		const wrapper = mount(Contact)
+		const wrapper = mountContact()
 
 		await wrapper.find("#navn")
 			.setValue("John Doe")

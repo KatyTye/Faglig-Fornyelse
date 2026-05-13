@@ -1,9 +1,80 @@
 <script lang="ts">
 
+function checkForFormErrors() {
+	const name = (document.querySelector<HTMLInputElement>('#navn')?.value || '').trim()
+	const mail = (document.querySelector<HTMLInputElement>('#mail')?.value || '').trim()
+	const phone = (document.querySelector<HTMLInputElement>('#telefon')?.value || '').trim()
+	const message = (document.querySelector<HTMLTextAreaElement>('#besked')?.value || '').trim()
+
+	const fieldErrors: Record<string, string[]> = {
+		"navn": [],
+		"mail": [],
+		"telefon": [],
+		"besked": []
+	}
+
+	if (!name) {
+		fieldErrors?.navn?.push('Du skal udfylde dette felt.')
+	}
+
+	if (!mail) {
+		fieldErrors?.mail?.push('Du skal udfylde dette felt.')
+	}
+
+	if (mail && !/\S+@\S+\.\S+/.test(mail)) {
+		fieldErrors?.mail?.push('Du har ikke skrevet en gyldig e-mail.')
+	}
+
+	if (!message) {
+		fieldErrors?.besked?.push('Du skal udfylde dette felt.')
+	}
+
+	if (message && message.length < 25) {
+		fieldErrors?.besked?.push('Din besked skal være på mindst 25 tegn.')
+	}
+
+	if (phone && !/^\+?\d[\d\s-]{6,}\d$/.test(phone)) {
+		fieldErrors?.telefon?.push('Indtasted telefonnummer er ikke gyldigt.')
+	}
+	
+	return fieldErrors
+}
+
 export default {
 	methods: {
 		handleSubmit(event: Event) {
 			event.preventDefault()
+
+			const fields = ['navn', 'telefon', 'mail', 'besked']
+			this.handleChange(fields)
+
+			console.log('hello world')
+		},
+
+		handleChange(fields: string[]) {
+			const allErrors = checkForFormErrors()
+			for (const field of fields) {
+				const list = document.querySelector(`#${field}-list`)
+				if (list) {
+					list.innerHTML = ''
+					const errors = allErrors[field] || []
+					for (const error of errors) {
+						const li = document.createElement('li')
+						li.classList = "page-content__list-item"
+						li.textContent = error
+						list.appendChild(li)
+					}
+				}
+
+				if (list) {
+
+					if ((allErrors?.[field]?.length || 0) >= 1) {
+						list.classList = "page-content__list active"
+					} else {
+						list.classList = "page-content__list"
+					}
+				}
+			}
 		}
 	}
 }
@@ -14,35 +85,51 @@ export default {
 	<form v-on:submit="evt => handleSubmit(evt)" class="page-content__form">
 		<label for="navn" class="page-content__form-label">
 			<span class="page-content__form-label-text">
-				Dit navn:
+				Dit navn: <span class="required">
+					*
+				</span>
 			</span>
 			<input type="text" name="navn" id="navn" autocomplete="given-name"
-			placeholder="John Doe" required="true" class="page-content__form-input">
+			placeholder="John Doe" class="page-content__form-input" v-on:input="handleChange(['navn'])">
 		</label>
+
+		<ul class="page-content__list" id="navn-list"></ul>
 
 		<label for="telefon" class="page-content__form-label">
 			<span class="page-content__form-label-text">
-				Dit telefonnummer:
+				Dit telefonnummer: <span class="optional">
+					*
+				</span>
 			</span>
 			<input type="text" name="telefon" id="telefon" autocomplete="tel"
-			placeholder="+4512345678" class="page-content__form-input">
+			placeholder="+4512345678" class="page-content__form-input" v-on:input="handleChange(['telefon'])">
 		</label>
+
+		<ul class="page-content__list" id="telefon-list"></ul>
 
 		<label for="mail" class="page-content__form-label">
 			<span class="page-content__form-label-text">
-				Din e-mail:
+				Din e-mail: <span class="required">
+					*
+				</span>
 			</span>
 			<input type="email" name="mail" id="mail" autocomplete="email"
-			placeholder="youremail@anymail.com" required="true" class="page-content__form-input">
+			placeholder="youremail@anymail.com" class="page-content__form-input" v-on:input="handleChange(['mail'])">
 		</label>
+
+		<ul class="page-content__list" id="mail-list"></ul>
 
 		<label for="besked" class="page-content__form-label">
 			<span class="page-content__form-label-text">
-				Din besked:
+				Din besked: <span class="required">
+					*
+				</span>
 			</span>
-			<textarea name="besked" id="besked" required="true" class="page-content__form-input besked"
-			placeholder="Skriv din besked til os her."></textarea>
+			<textarea name="besked" id="besked" class="page-content__form-input besked"
+			placeholder="Skriv din besked til os her." v-on:input="handleChange(['besked'])"></textarea>
 		</label>
+
+		<ul class="page-content__list" id="besked-list"></ul>
 
 		<button class="page-content__form-submit button">
 			Indsend kontakt formular
@@ -57,6 +144,25 @@ export default {
 	flex-direction: column;
 }
 
+.page-content__form-label {
+	cursor: pointer;
+}
+
+.page-content__list {
+	height: 0;
+	font-size: 14px;
+	overflow: hidden;
+	font-style: italic;
+	margin-bottom: 25px;
+	letter-spacing: 1.5px;
+	transition: height 0.3s linear;
+	color: var(--error-text-color);
+}
+
+.page-content__list.active {
+	height: 17px;
+}
+
 .page-content__form-label-text {
 	font-weight: bold;
 	color: var(--primary-text-color);
@@ -67,7 +173,7 @@ export default {
 	outline: none;
 	padding: 10px;
 	display: block;
-	margin: 10px 0 25px 0;
+	margin: 10px 0;
 	border-radius: 5px;
 	border: 2px solid transparent;
 	color: var(--primary-text-color);

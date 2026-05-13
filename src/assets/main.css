@@ -33,6 +33,10 @@ p {
 	color: var(--primary-text-color);
 }
 
+ul, li {
+	list-style-type: none;
+}
+
 h1, h2, h3, h4 {
 	font-weight: bold;
 	color: var(--third-text-color);
@@ -56,4 +60,12 @@ img, svg {
 .button:hover {
 	color: var(--primary-text-color);
 	background: var(--third-text-color);
+}
+
+.required {
+	color: var(--error-text-color);
+}
+
+.optional {
+	color: var(--warning-text-color);
 }
